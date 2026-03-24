@@ -1,0 +1,55 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Checkout</h1>
+      <a routerLink="/cart" class="text-sm text-indigo-600 hover:underline">Back to cart</a>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="rounded-md bg-red-50 p-4 mb-4">
+        <p class="text-sm text-red-800">{{ errorMessage() }}</p>
+      </div>
+    }
+
+    @if (isLoading()) {
+      <div class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    }
+
+    @if (!isLoading() && cart()) {
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Address</h2>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Shipping address</label>
+            <textarea formControlName="shippingAddress" rows="4"
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+            @if (shippingAddress?.invalid && shippingAddress?.touched) {
+              <p class="mt-1 text-sm text-red-600">Please enter a valid address (min 10 chars).</p>
+            }
+          </div>
+
+          <div class="pt-4 border-t">
+            <div class="flex justify-between text-sm text-gray-600">
+              <span>Items</span>
+              <span>{{ cart()!.totalItems }}</span>
+            </div>
+            <div class="mt-2 flex justify-between font-semibold">
+              <span>Total</span>
+              <span>${{ cart()!.subtotal.toFixed(2) }}</span>
+            </div>
+            <p class="mt-2 text-xs text-gray-500">Payment method: Pay on delivery</p>
+
+            <button type="submit" [disabled]="isSubmitting()"
+                    class="mt-4 w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50">
+              @if (isSubmitting()) { Placing order... } @else { Confirm order }
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+  </div>
+</div>
+

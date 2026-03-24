@@ -1,0 +1,97 @@
+<nav class="bg-white shadow-lg border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex">
+        <div class="flex-shrink-0 flex items-center">
+          <a routerLink="/" class="text-2xl font-bold text-indigo-600">eCommerce</a>
+        </div>
+        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+          <a
+            routerLink="/"
+            routerLinkActive="!border-indigo-500 !text-indigo-600 bg-indigo-50"
+            [routerLinkActiveOptions]="{exact: true}"
+            class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors"
+          >
+            Products
+          </a>
+
+          @if (authService.hasRole('SELLER')) {
+            <a
+              routerLink="/seller/dashboard"
+              routerLinkActive="!border-indigo-500 !text-indigo-600 bg-indigo-50"
+              class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors"
+            >
+              Dashboard
+            </a>
+            <a
+              routerLink="/seller/orders"
+              routerLinkActive="!border-indigo-500 !text-indigo-600 bg-indigo-50"
+              class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors"
+            >
+              Seller Orders
+            </a>
+          }
+
+          @if (authService.hasRole('CLIENT')) {
+            <a
+              routerLink="/cart"
+              routerLinkActive="!border-indigo-500 !text-indigo-600 bg-indigo-50"
+              class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors"
+            >
+              Cart
+            </a>
+            <a
+              routerLink="/orders"
+              routerLinkActive="!border-indigo-500 !text-indigo-600 bg-indigo-50"
+              class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium transition-colors"
+            >
+              Orders
+            </a>
+          }
+        </div>
+      </div>
+
+      <div class="flex items-center">
+        @if (authService.isAuthenticated()) {
+          <div class="flex items-center space-x-4">
+            <a
+              routerLink="/profile"
+              routerLinkActive="!text-indigo-600 !bg-indigo-50 rounded-md"
+              class="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
+            >
+              Profile
+            </a>
+            <span class="text-sm text-gray-700">{{ authService.currentUser()?.name }}</span>
+            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">
+              {{ authService.currentUser()?.role }}
+            </span>
+            <button
+              (click)="logout()"
+              class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Logout
+            </button>
+          </div>
+        } @else {
+          <div class="flex items-center space-x-4">
+            <a
+              routerLink="/login"
+              routerLinkActive="!text-indigo-600 !bg-indigo-50 rounded-md"
+              class="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
+            >
+              Sign in
+            </a>
+            <a
+              routerLink="/register"
+              routerLinkActive="!ring-2 !ring-indigo-300"
+              class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+            >
+              Sign up
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</nav>
+

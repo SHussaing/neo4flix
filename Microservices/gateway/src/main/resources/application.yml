@@ -1,0 +1,134 @@
+server:
+  port: 8443
+  forward-headers-strategy: framework
+  ssl:
+    enabled: true
+    key-store: file:/certs/shared.p12
+    key-store-type: PKCS12
+    key-store-password: ${GATEWAY_KEYSTORE_PASSWORD:changeit}
+    key-alias: ${GATEWAY_KEY_ALIAS:shared}
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # ============ USER SERVICE ROUTES ============
+        # Auth endpoints (public)
+        - id: user-service-auth
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=0
+
+        # Profile endpoints (authenticated)
+        - id: user-service-profile
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/users/me,/users/me/**
+          filters:
+            - RewritePath=/users/(?<segment>.*), /$\{segment}
+
+        # ============ MOVIE SERVICE ROUTES ============
+        # Movie endpoints
+        - id: movie-service
+          uri: lb://MOVIE-SERVICE
+          predicates:
+            - Path=/movie/**
+          filters:
+            - StripPrefix=0
+
+        # ============ RATING SERVICE ROUTES ============
+        # Rating endpoints
+        - id: rating-service
+          uri: lb://RATING-SERVICE
+          predicates:
+            - Path=/rating/**
+          filters:
+            - StripPrefix=0
+
+        # ============ RECOMMENDATION SERVICE ROUTES ============
+        - id: recommendation-service
+          uri: lb://RECOMMENDATION-SERVICE
+          predicates:
+            - Path=/recommendation/**
+          filters:
+            - StripPrefix=0
+
+      # Global CORS configuration
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost"
+              - "http://localhost:80"
+              - "http://localhost:3000"
+              - "http://localhost:4200"
+              - "https://localhost"
+              - "https://localhost:3000"
+              - "https://localhost:4200"
+              - "https://localhost:8443"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+              - Authorization
+              - Content-Type
+              - Accept
+              - X-Request-Id
+            exposedHeaders:
+              - Authorization
+              - X-Request-Id
+            allowCredentials: true
+            maxAge: 3600
+
+      # Default filters
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      # In docker-compose we set EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:${EUREKA_URI:http://localhost:8761/eureka}}
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:mySecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLong12345678901234567890}
+  expiration: ${JWT_EXPIRATION:86400000}  # 24 hours in milliseconds
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG
+    smahfood.ecommerce.gateway: DEBUG

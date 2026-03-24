@@ -1,0 +1,93 @@
+services:
+
+  discovery:
+    image: neo4flix-discovery:${TAG:-latest}
+    build:
+      context: ./Microservices/discovery
+    container_name: neo4flix-discovery
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  gateway:
+    image: neo4flix-gateway:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Microservices/gateway/Dockerfile
+    container_name: neo4flix-gateway
+    depends_on:
+      - discovery
+      - user
+      - movie
+      - rating
+      - recommendation
+    ports:
+      - "8443:8443"
+    environment:
+      # Eureka
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      # JWT
+      - JWT_SECRET=mySecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLong12345678901234567890
+      - GATEWAY_KEYSTORE_PASSWORD=changeit
+      - GATEWAY_KEY_ALIAS=shared
+
+  user:
+    image: neo4flix-user:${TAG:-latest}
+    build:
+      context: ./Microservices/user
+    container_name: neo4flix-user
+    depends_on:
+      - discovery
+    environment:
+      - SPRING_APPLICATION_NAME=USER-SERVICE
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - JWT_SECRET=mySecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLong12345678901234567890
+
+  movie:
+    image: neo4flix-product:${TAG:-latest}
+    build:
+      context: ./Microservices/movie
+    container_name: neo4flix-movie
+    depends_on:
+      - discovery
+    environment:
+      - SPRING_APPLICATION_NAME=MOVIE-SERVICE
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+
+  rating:
+    image: neo4flix-rating:${TAG:-latest}
+    build:
+      context: ./Microservices/rating
+    container_name: neo4flix-rating
+    depends_on:
+      - discovery
+    environment:
+      - SPRING_APPLICATION_NAME=RATING-SERVICE
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+
+  recommendation :
+    image: neo4flix-recommendation:${TAG:-latest}
+    build:
+      context: ./Microservices/recommendation
+    container_name: neo4flix-recommendation
+    depends_on:
+      - discovery
+    environment:
+      - SPRING_APPLICATION_NAME=RECOMMENDATION-SERVICE
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+
+  frontend:
+    image: neo4flix-frontend:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Frontend-Application/Dockerfile
+    container_name: neo4flix-frontend
+    depends_on:
+      - gateway
+    ports:
+      - "4200:443"
+      - "4201:80"
+    environment:
+      - NODE_ENV=production
+

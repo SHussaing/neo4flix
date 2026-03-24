@@ -1,0 +1,151 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        Create your account
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        Or
+        <a routerLink="/login" class="font-medium text-indigo-600 hover:text-indigo-500">
+          sign in to existing account
+        </a>
+      </p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+      @if (errorMessage()) {
+        <div class="rounded-md bg-red-50 p-4">
+          <p class="text-sm text-red-800">{{ errorMessage() }}</p>
+        </div>
+      }
+
+      <div class="space-y-4">
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700">
+            Name
+            <span class="text-gray-500 text-xs ml-2">({{ name?.value?.length || 0 }}/50)</span>
+          </label>
+          <input
+            id="name"
+            formControlName="name"
+            type="text"
+            maxlength="50"
+            class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            [class.border-red-500]="name?.invalid && name?.touched"
+            placeholder="Enter your name"
+          />
+          @if (name?.invalid && name?.touched) {
+            <p class="mt-1 text-sm text-red-600">
+              @if (name?.errors?.['required']) {
+                Name is required
+              }
+              @if (name?.errors?.['minlength']) {
+                Name must be at least 2 characters
+              }
+              @if (name?.errors?.['maxlength']) {
+                Name must be 50 characters or less
+              }
+            </p>
+          }
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">
+            Email address
+            <span class="text-gray-500 text-xs ml-2">({{ email?.value?.length || 0 }}/254)</span>
+          </label>
+          <input
+            id="email"
+            formControlName="email"
+            type="email"
+            maxlength="254"
+            class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            [class.border-red-500]="email?.invalid && email?.touched"
+            placeholder="Enter your email"
+          />
+          @if (email?.invalid && email?.touched) {
+            <p class="mt-1 text-sm text-red-600">
+              @if (email?.errors?.['required']) {
+                Email is required
+              }
+              @if (email?.errors?.['email']) {
+                Please enter a valid email
+              }
+              @if (email?.errors?.['maxlength']) {
+                Email must be 254 characters or less
+              }
+            </p>
+          }
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">
+            Password
+            <span class="text-gray-500 text-xs ml-2">({{ password?.value?.length || 0 }}/16)</span>
+          </label>
+          <input
+            id="password"
+            formControlName="password"
+            type="password"
+            maxlength="16"
+            class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            [class.border-red-500]="password?.invalid && password?.touched"
+            placeholder="Enter your password"
+          />
+          @if (password?.invalid && password?.touched) {
+            <p class="mt-1 text-sm text-red-600">
+              @if (password?.errors?.['required']) {
+                Password is required
+              }
+              @if (password?.errors?.['minlength']) {
+                Password must be at least 6 characters
+              }
+              @if (password?.errors?.['maxlength']) {
+                Password must be 16 characters or less
+              }
+            </p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
+          <div class="flex gap-4">
+            <label class="flex items-center cursor-pointer">
+              <input
+                type="radio"
+                formControlName="role"
+                value="CLIENT"
+                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+              />
+              <span class="ml-2 text-sm text-gray-700">Client (Browse & Buy)</span>
+            </label>
+            <label class="flex items-center cursor-pointer">
+              <input
+                type="radio"
+                formControlName="role"
+                value="SELLER"
+                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+              />
+              <span class="ml-2 text-sm text-gray-700">Seller (Sell Products)</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button
+          type="submit"
+          [disabled]="isLoading()"
+          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          @if (isLoading()) {
+            <span>Creating account...</span>
+          } @else {
+            <span>Create account</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

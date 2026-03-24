@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: USER-SERVICE
+
+
+# JWT Configuration
+jwt:
+  secret: mySecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLong12345678901234567890
+  expiration: 86400000
+
+
+server:
+  port: 8081
+  ssl:
+    enabled: false
+
+
+# Eureka (Discovery)
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

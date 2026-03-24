@@ -1,0 +1,78 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Seller Orders</h1>
+      <a routerLink="/seller/analytics" class="text-sm text-indigo-600 hover:underline">Analytics</a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-4 mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Search</label>
+          <input [(ngModel)]="q" name="q" type="text" placeholder="Product or order..."
+                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Status</label>
+          <select [(ngModel)]="status" name="status" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+            <option value="">All</option>
+            <option value="CONFIRMED">CONFIRMED</option>
+            <option value="SHIPPED">SHIPPED</option>
+            <option value="COMPLETED">COMPLETED</option>
+            <option value="CANCELLED">CANCELLED</option>
+          </select>
+        </div>
+        <div class="md:col-span-3">
+          <button (click)="search()" class="px-4 py-2 bg-indigo-600 text-white rounded-md">Search</button>
+        </div>
+      </div>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="rounded-md bg-red-50 p-4 mb-4">
+        <p class="text-sm text-red-800">{{ errorMessage() }}</p>
+      </div>
+    }
+
+    @if (isLoading()) {
+      <div class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    }
+
+    <div class="bg-white rounded-lg shadow overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50 text-gray-700">
+          <tr>
+            <th class="text-left p-3">Order</th>
+            <th class="text-left p-3">Created</th>
+            <th class="text-left p-3">Buyer</th>
+            <th class="text-left p-3">Item</th>
+            <th class="text-right p-3">Total</th>
+            <th class="text-left p-3">Status</th>
+            <th class="text-left p-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of rows(); track r.orderId + '-' + r.productId) {
+            <tr class="border-t">
+              <td class="p-3">{{ r.orderId }}</td>
+              <td class="p-3">{{ r.createdAt | date:'short' }}</td>
+              <td class="p-3">{{ r.buyerId }}</td>
+              <td class="p-3">{{ r.name }} (x{{ r.quantity }})</td>
+              <td class="p-3 text-right">${{ r.lineTotal.toFixed(2) }}</td>
+              <td class="p-3"><span class="px-2 py-1 rounded bg-gray-100">{{ r.status }}</span></td>
+              <td class="p-3">
+                <div class="flex gap-2">
+                  <button class="px-2 py-1 border rounded" (click)="setStatus(r.orderId, 'SHIPPED')" [disabled]="updating() === r.orderId">Ship</button>
+                  <button class="px-2 py-1 border rounded" (click)="setStatus(r.orderId, 'COMPLETED')" [disabled]="updating() === r.orderId">Complete</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

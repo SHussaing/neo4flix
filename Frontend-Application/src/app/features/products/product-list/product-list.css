@@ -1,0 +1,32 @@
+/* ── Dual-range price slider ─────────────────────────────────── */
+.price-thumb {
+  pointer-events: none;
+  height: 0;
+}
+
+.price-thumb::-webkit-slider-thumb {
+  pointer-events: all;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #4f46e5;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
+.price-thumb::-moz-range-thumb {
+  pointer-events: all;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #4f46e5;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
+.price-thumb::-webkit-slider-runnable-track { background: transparent; }
+.price-thumb::-moz-range-track { background: transparent; }
+
