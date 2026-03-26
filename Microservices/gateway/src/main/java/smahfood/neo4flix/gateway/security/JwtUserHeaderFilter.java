@@ -1,6 +1,7 @@
 package smahfood.neo4flix.gateway.security;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 
@@ -10,6 +11,10 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -72,11 +77,18 @@ public class JwtUserHeaderFilter implements GlobalFilter, Ordered {
                 return chain.filter(exchange);
             }
 
+            // Forward user id to downstream services.
             ServerWebExchange mutated = exchange.mutate()
                     .request(r -> r.headers(h -> h.set(HEADER_USER_ID, userId)))
                     .build();
 
-            return chain.filter(mutated);
+            // Also mark request as authenticated for Spring Security (so .authenticated() works).
+            var authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+            var authentication = new UsernamePasswordAuthenticationToken(userId, token, authorities);
+            var context = new SecurityContextImpl(authentication);
+
+            return chain.filter(mutated)
+                    .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)));
         } catch (Exception ex) {
             if (requiresAuth) {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);

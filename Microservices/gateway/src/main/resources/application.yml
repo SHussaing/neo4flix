@@ -11,6 +11,10 @@ server:
 spring:
   application:
     name: gateway-service
+  security:
+    user:
+      name: disabled
+      password: disabled
   cloud:
     gateway:
       discovery:
@@ -130,5 +134,5 @@ management:
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
-    org.springframework.security: DEBUG
     smahfood.neo4flix.gateway: DEBUG
+    org.springframework.security: WARN
