@@ -1,6 +1,8 @@
 package smahfood.neo4flix.recommendation.repo;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Repository;
@@ -23,6 +25,13 @@ public class RecommendationRepository {
     public List<RecommendationDto> recommendForUser(String userId, int limit, String genre, Integer yearFrom, Integer yearTo) {
         // Collaborative filtering-ish:
         // Find other users who rated the same movies, then recommend movies they rated that current user hasn't rated.
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        params.put("limit", limit);
+        params.put("genre", normalize(genre));
+        params.put("yearFrom", yearFrom);
+        params.put("yearTo", yearTo);
+
         return neo4jClient.query("""
                 MATCH (me:User {id: $userId})-[:RATED]->(m1:Movie)<-[:RATED]-(other:User)-[:RATED]->(m2:Movie)
                 WHERE NOT (me)-[:RATED]->(m2)
@@ -36,13 +45,7 @@ public class RecommendationRepository {
                 ORDER BY score DESC, title ASC
                 LIMIT $limit
                 """)
-                .bindAll(java.util.Map.of(
-                        "userId", userId,
-                        "limit", limit,
-                        "genre", normalize(genre),
-                        "yearFrom", yearFrom,
-                        "yearTo", yearTo
-                ))
+                .bindAll(params)
                 .fetchAs(RecommendationDto.class)
                 .mappedBy((typeSystem, record) -> new RecommendationDto(
                         record.get("id").asString(),

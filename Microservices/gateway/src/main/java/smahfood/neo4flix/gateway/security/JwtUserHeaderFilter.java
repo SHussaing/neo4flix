@@ -23,8 +23,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import reactor.core.publisher.Mono;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Component
 public class JwtUserHeaderFilter implements GlobalFilter, Ordered {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtUserHeaderFilter.class);
 
     private static final String HEADER_USER_ID = "X-User-Id";
 
@@ -53,6 +58,7 @@ public class JwtUserHeaderFilter implements GlobalFilter, Ordered {
         String auth = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         if (auth == null || !auth.startsWith("Bearer ")) {
             if (requiresAuth) {
+                log.debug("401 (missing/invalid Authorization header) path={}", path);
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
@@ -71,11 +77,14 @@ public class JwtUserHeaderFilter implements GlobalFilter, Ordered {
             String userId = claims.getSubject();
             if (userId == null || userId.isBlank()) {
                 if (requiresAuth) {
+                    log.debug("401 (token missing subject) path={}", path);
                     exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                     return exchange.getResponse().setComplete();
                 }
                 return chain.filter(exchange);
             }
+
+            log.debug("JWT ok; forwarding {}={} for path={}", HEADER_USER_ID, userId, path);
 
             // Forward user id to downstream services.
             ServerWebExchange mutated = exchange.mutate()
@@ -91,6 +100,7 @@ public class JwtUserHeaderFilter implements GlobalFilter, Ordered {
                     .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)));
         } catch (Exception ex) {
             if (requiresAuth) {
+                log.debug("401 (JWT parse/verify failed) path={} error={}", path, ex.toString());
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
