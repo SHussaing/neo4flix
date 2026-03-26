@@ -1,0 +1,98 @@
+<section>
+  <header class="page-header">
+    <div>
+      <h2 class="page-title">Movie</h2>
+      <p class="page-subtitle">Details, rating, and watchlist.</p>
+    </div>
+    <div class="row">
+      <a class="btn btn--ghost" routerLink="/movies">Back</a>
+      <a class="btn btn--ghost" routerLink="/recommendations">Recommendations</a>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="alert">Loading…</div>
+  } @else if (error()) {
+    <div class="alert alert--error">{{ error() }}</div>
+  } @else if (!movie()) {
+    <div class="alert">Movie not found.</div>
+  } @else {
+    <div class="grid">
+      <div class="col-8">
+        <div class="surface" style="padding:16px">
+          <h2 class="page-title" style="margin:0">{{ movie()!.title }}</h2>
+          <div class="row" style="margin-top:10px">
+            <span class="chip">{{ movie()!.genre }}</span>
+            <span class="chip">{{ movie()!.releaseYear }}</span>
+            @if (movie()!.averageRating !== undefined && movie()!.averageRating !== null) {
+              <span class="chip">⭐ {{ movie()!.averageRating | number: '1.1-1' }} ({{ movie()!.ratingCount ?? 0 }})</span>
+            }
+          </div>
+
+          <div class="divider" style="margin:14px 0"></div>
+
+          <p style="margin:0; color: rgba(255,255,255,.82); line-height:1.55">
+            {{ movie()!.overview || 'No overview available.' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="col-4">
+        <div class="surface" style="padding:16px">
+          <h3 style="margin:0 0 10px; font-size:14px; letter-spacing:.04em; text-transform:uppercase; color: var(--muted);">Your actions</h3>
+
+          @if (auth.isAuthenticated()) {
+            <div class="stack">
+              <div class="field">
+                <div class="label">Rate (1–10)</div>
+                <div class="row" style="gap:6px; align-items:center; flex-wrap:wrap">
+                  @for (n of [1,2,3,4,5,6,7,8,9,10]; track n) {
+                    <button
+                      type="button"
+                      class="btn btn--ghost"
+                      (click)="setStars(n)"
+                      [style.border-color]="stars() === n ? 'rgba(167,139,250,.55)' : 'var(--border)'"
+                      [style.background]="stars() === n ? 'rgba(167,139,250,.14)' : 'transparent'"
+                      style="padding:8px 10px"
+                    >
+                      {{ n }}
+                    </button>
+                  }
+                </div>
+                @if (myRating()) {
+                  <div class="help">Your rating: <strong>{{ myRating()!.stars }}</strong></div>
+                } @else {
+                  <div class="help">Not rated yet.</div>
+                }
+              </div>
+
+              <div class="row">
+                <button class="btn btn--primary" type="button" (click)="submitRating()" [disabled]="stars() < 1 || stars() > 10">
+                  Save rating
+                </button>
+                <button class="btn btn--ghost" type="button" (click)="addToWatchlist()">Add to watchlist</button>
+              </div>
+
+              <div class="row">
+                <a class="btn btn--ghost" routerLink="/watchlist">Open watchlist</a>
+                <a class="btn btn--ghost" routerLink="/ratings">My ratings</a>
+              </div>
+
+              @if (savedMessage()) {
+                <div class="alert">{{ savedMessage() }}</div>
+              }
+            </div>
+          } @else {
+            <div class="stack">
+              <div class="alert">Sign in to rate & save.</div>
+              <div class="row">
+                <a class="btn btn--primary" routerLink="/login">Sign in</a>
+                <a class="btn btn--ghost" routerLink="/register">Create account</a>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</section>

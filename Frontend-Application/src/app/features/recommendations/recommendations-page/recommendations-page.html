@@ -1,0 +1,58 @@
+<section>
+  <header class="page-header">
+    <div>
+      <h2 class="page-title">Recommendations</h2>
+      <p class="page-subtitle">Personalized picks based on your ratings and the movie graph.</p>
+    </div>
+    <div class="row">
+      <a class="btn btn--ghost" routerLink="/movies">Browse movies</a>
+    </div>
+  </header>
+
+  <div class="surface" style="padding:14px; margin-bottom: 14px;">
+    <form class="grid" (submit)="$event.preventDefault(); reload()">
+      <div class="col-4 field">
+        <label class="label">Genre</label>
+        <input class="input" type="text" [value]="genre()" (input)="genre.set(($any($event.target)).value)" placeholder="e.g. Action" />
+      </div>
+      <div class="col-4 field">
+        <label class="label">Year from</label>
+        <input class="input" type="number" [value]="yearFrom()" (input)="yearFrom.set(($any($event.target)).value)" placeholder="1990" />
+      </div>
+      <div class="col-4 field">
+        <label class="label">Year to</label>
+        <input class="input" type="number" [value]="yearTo()" (input)="yearTo.set(($any($event.target)).value)" placeholder="2025" />
+      </div>
+
+      <div class="col-12 row" style="margin-top:2px">
+        <button class="btn btn--primary" type="submit">Apply filters</button>
+        <button class="btn btn--ghost" type="button" (click)="copyShareText()" [disabled]="!hasItems()">Copy share text</button>
+        <div class="spacer"></div>
+        @if (shareMessage()) {
+          <span class="help">{{ shareMessage() }}</span>
+        }
+      </div>
+    </form>
+  </div>
+
+  @if (loading()) {
+    <div class="alert">Loading…</div>
+  } @else if (error()) {
+    <div class="alert alert--error">{{ error() }}</div>
+  } @else if (!hasItems()) {
+    <div class="alert">No recommendations yet. Rate a few movies first.</div>
+  } @else {
+    <div class="grid">
+      @for (m of items(); track m.id) {
+        <a class="movie-card col-4" [routerLink]="['/movies', m.id]">
+          <h3 class="movie-card__title">{{ m.title }}</h3>
+          <div class="chips">
+            <span class="chip">{{ m.genre }}</span>
+            <span class="chip">{{ m.releaseYear }}</span>
+          </div>
+          <p class="movie-card__overview" style="margin-top:6px">{{ m.reason }}</p>
+        </a>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,38 @@
+<section>
+  <header class="page-header">
+    <div>
+      <h2 class="page-title">Watchlist</h2>
+      <p class="page-subtitle">Movies you saved to watch later.</p>
+    </div>
+    <div class="row">
+      <a class="btn btn--ghost" routerLink="/movies">Browse</a>
+      <a class="btn btn--ghost" routerLink="/recommendations">Recommendations</a>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="alert">Loading…</div>
+  } @else if (error()) {
+    <div class="alert alert--error">{{ error() }}</div>
+  } @else if (!hasItems()) {
+    <div class="alert">Your watchlist is empty.</div>
+  } @else {
+    <div class="surface" style="padding: 12px">
+      <div class="list">
+        @for (m of items(); track m.id) {
+          <div class="row" style="padding:10px; border:1px solid var(--border); border-radius: 14px; background: rgba(255,255,255,.03)">
+            <div class="stack" style="gap:4px">
+              <a [routerLink]="['/movies', m.id]" style="text-decoration:none; font-weight:900">{{ m.title }}</a>
+              <div class="chips">
+                <span class="chip">{{ m.genre }}</span>
+                <span class="chip">{{ m.releaseYear }}</span>
+              </div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn btn--danger" type="button" (click)="remove(m.id)">Remove</button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

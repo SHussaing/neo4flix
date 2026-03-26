@@ -1,0 +1,37 @@
+<section>
+  <header class="page-header">
+    <div>
+      <h2 class="page-title">Movies</h2>
+      <p class="page-subtitle">Browse the catalog. Open a movie to rate it or add it to your watchlist.</p>
+    </div>
+    <div class="row">
+      <a class="btn btn--ghost" routerLink="/search">Search</a>
+      <a class="btn btn--primary" routerLink="/recommendations">Recommendations</a>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="alert">Loading…</div>
+  } @else if (error()) {
+    <div class="alert alert--error">{{ error() }}</div>
+  } @else if (!hasMovies()) {
+    <div class="alert">No movies found.</div>
+  } @else {
+    <div class="grid">
+      @for (m of movies()!; track m.id) {
+        <a class="movie-card col-4" [routerLink]="['/movies', m.id]">
+          <h3 class="movie-card__title">{{ m.title }}</h3>
+          <div class="chips">
+            <span class="chip">{{ m.genre }}</span>
+            <span class="chip">{{ m.releaseYear }}</span>
+          </div>
+          @if (m.overview) {
+            <p class="movie-card__overview">{{ m.overview }}</p>
+          } @else {
+            <p class="movie-card__overview" style="opacity:.7">No overview available.</p>
+          }
+        </a>
+      }
+    </div>
+  }
+</section>

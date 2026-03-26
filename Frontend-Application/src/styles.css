@@ -1,195 +1,158 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* If you still use Tailwind directives in this project, keep them. Otherwise these can be removed later. */
 @import "tailwindcss";
 
-/* Dark Theme Global Styles */
-:root {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --bg-card: #1e293b;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border-color: #334155;
-  --accent-primary: #6366f1;
-  --accent-hover: #4f46e5;
+/* Global styles / design system */
+:root{
+  --bg: #0b1020;
+  --bg2:#0f172a;
+  --card: rgba(255,255,255,.04);
+  --card2: rgba(255,255,255,.06);
+  --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,.68);
+  --border: rgba(255,255,255,.10);
+  --brand-700: #a78bfa;
+  --brand-800: #8b5cf6;
+  --danger: #fb7185;
+  --shadow: 0 10px 30px rgba(0,0,0,.45);
+  --radius: 16px;
+  --radius-sm: 12px;
+  --container: 1160px;
+  color-scheme: dark;
 }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  background: radial-gradient(1000px 600px at 10% 0%, rgba(139,92,246,.28), transparent 55%),
+              radial-gradient(900px 600px at 90% 10%, rgba(56,189,248,.18), transparent 55%),
+              linear-gradient(180deg, var(--bg), var(--bg2));
+  color: var(--text);
 }
 
-/* Override Tailwind classes for dark theme */
-.bg-white {
-  background-color: var(--bg-card) !important;
+a{color:inherit}
+
+.container{
+  width: min(var(--container), calc(100% - 32px));
+  margin: 0 auto;
 }
 
-.bg-gray-50 {
-  background-color: var(--bg-primary) !important;
+/* App shell */
+.app-shell{
+  min-height:100dvh;
+  display:grid;
+  grid-template-rows: auto 1fr auto;
 }
 
-.bg-gray-100 {
-  background-color: var(--bg-secondary) !important;
+.app-main{padding:18px 0 28px}
+
+.app-footer{
+  border-top: 1px solid var(--border);
+  padding:18px 0;
+  color: var(--muted);
+  font-size: 13px;
 }
 
-.bg-gray-200 {
-  background-color: var(--bg-tertiary) !important;
+/* Page headings */
+.page-header{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:14px;
+  margin: 8px 0 16px;
+}
+.page-title{margin:0;font-size:22px;letter-spacing:.2px}
+.page-subtitle{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+/* Cards / surfaces */
+.surface{
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
-.bg-gray-300 {
-  background-color: var(--bg-tertiary) !important;
+.grid{
+  display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 14px;
 }
 
-.text-gray-900 {
-  color: var(--text-primary) !important;
+.col-12{grid-column: span 12}
+.col-8{grid-column: span 8}
+.col-6{grid-column: span 6}
+.col-4{grid-column: span 4}
+@media (max-width: 900px){
+  .col-8,.col-6,.col-4{grid-column: span 12}
 }
 
-.text-gray-800 {
-  color: var(--text-primary) !important;
+/* Buttons */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 700;
+  text-decoration:none;
+  border: 1px solid transparent;
+  cursor:pointer;
+  transition: transform .05s ease, background .15s ease, border-color .15s ease;
+  user-select:none;
 }
+.btn:active{transform: translateY(1px)}
+.btn--primary{background: linear-gradient(135deg, var(--brand-800), #22d3ee); color: #0b1020}
+.btn--primary:hover{filter: brightness(1.05)}
+.btn--ghost{background: transparent; border-color: var(--border); color: var(--text)}
+.btn--ghost:hover{background: rgba(255,255,255,.06)}
+.btn--danger{background: rgba(251,113,133,.12); border-color: rgba(251,113,133,.28); color: #fecdd3}
 
-.text-gray-700 {
-  color: var(--text-secondary) !important;
-}
-
-.text-gray-600 {
-  color: var(--text-secondary) !important;
-}
-
-.text-gray-500 {
-  color: var(--text-muted) !important;
-}
-
-.text-gray-400 {
-  color: var(--text-muted) !important;
-}
-
-.border-gray-300 {
-  border-color: var(--border-color) !important;
-}
-
-.border-gray-200 {
-  border-color: var(--border-color) !important;
-}
-
-.divide-gray-200 > * + * {
-  border-color: var(--border-color) !important;
-}
-
-/* Input field dark styling */
-input, textarea, select {
-  background-color: var(--bg-secondary) !important;
-  border-color: var(--border-color) !important;
-  color: var(--text-primary) !important;
-}
-
-input::placeholder, textarea::placeholder {
-  color: var(--text-muted) !important;
-}
-
-input:focus, textarea:focus, select:focus {
-  border-color: var(--accent-primary) !important;
+/* Inputs */
+.field{display:grid;gap:6px}
+.label{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.input, .select{
+  width:100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
+.input:focus, .select:focus{border-color: rgba(167,139,250,.55); box-shadow: 0 0 0 3px rgba(167,139,250,.18)}
+.help{font-size:12px;color:var(--muted)}
 
-/* Shadow adjustments for dark theme */
-.shadow, .shadow-sm, .shadow-md, .shadow-lg {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3) !important;
-}
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:6px 10px;border-radius:999px;border:1px solid var(--border);background: rgba(255,255,255,.04);font-size:12px;color: var(--muted)}
 
-/* Hover states */
-.hover\:bg-gray-50:hover {
-  background-color: var(--bg-tertiary) !important;
-}
+/* Lists */
+.list{display:grid;gap:10px}
 
-.hover\:bg-gray-100:hover {
-  background-color: var(--bg-tertiary) !important;
-}
+/* Movie cards */
+.movie-card{padding:14px;border-radius:16px;border:1px solid var(--border);background: rgba(255,255,255,.04);text-decoration:none;display:flex;flex-direction:column;gap:8px;min-height:130px}
+.movie-card:hover{background: rgba(255,255,255,.06)}
+.movie-card__title{margin:0;font-size:15px;letter-spacing:.2px}
+.movie-card__meta{color:var(--muted);font-size:12px}
+.movie-card__overview{margin:0;color: rgba(255,255,255,.78);font-size:13px;line-height:1.35}
 
-.hover\:text-gray-700:hover {
-  color: var(--text-primary) !important;
-}
+/* Alerts */
+.alert{padding:10px 12px;border-radius: 12px;border:1px solid var(--border);background: rgba(255,255,255,.04)}
+.alert--error{border-color: rgba(251,113,133,.35); background: rgba(251,113,133,.10); color:#fecdd3}
+.alert--ok{border-color: rgba(34,197,94,.28); background: rgba(34,197,94,.10)}
 
-.hover\:text-gray-900:hover {
-  color: var(--text-primary) !important;
-}
+/* Simple auth layout */
+.auth-wrap{display:grid;place-items:center;min-height: calc(100dvh - 120px)}
+.auth-card{width: min(460px, 100%); padding: 18px}
+.auth-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
 
-.hover\:border-gray-300:hover {
-  border-color: var(--text-muted) !important;
-}
-
-/* Status colors adjusted for dark theme */
-.bg-red-50 {
-  background-color: rgba(239, 68, 68, 0.15) !important;
-}
-
-.bg-green-50 {
-  background-color: rgba(34, 197, 94, 0.15) !important;
-}
-
-.bg-indigo-50 {
-  background-color: rgba(99, 102, 241, 0.15) !important;
-}
-
-.bg-indigo-100 {
-  background-color: rgba(99, 102, 241, 0.2) !important;
-}
-
-.bg-blue-100 {
-  background-color: rgba(59, 130, 246, 0.2) !important;
-}
-
-.bg-green-100 {
-  background-color: rgba(34, 197, 94, 0.2) !important;
-}
-
-/* File input styling */
-input[type="file"]::file-selector-button {
-  background-color: var(--accent-primary);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-input[type="file"]::file-selector-button:hover {
-  background-color: var(--accent-hover);
-}
-
-/* Scrollbar styling for dark theme */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--bg-tertiary);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
-}
-
-/* Navbar active state styling for dark theme */
-nav a.bg-indigo-50,
-nav a.\!bg-indigo-50 {
-  background-color: rgba(99, 102, 241, 0.15) !important;
-}
-
-nav a.\!text-indigo-600 {
-  color: #818cf8 !important;
-}
-
-nav a.\!border-indigo-500 {
-  border-color: #6366f1 !important;
-}
-
+/* Utility */
+.stack{display:grid;gap:12px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+.divider{height:1px;background: var(--border)}
+.mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}

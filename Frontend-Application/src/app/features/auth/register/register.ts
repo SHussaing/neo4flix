@@ -22,9 +22,8 @@ export class Register {
   ) {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
-      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(16)]],
-      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      role: ['CLIENT', [Validators.required]]
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
+      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]]
     });
   }
 

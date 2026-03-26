@@ -1,88 +1,82 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-md w-full space-y-8">
-    <div>
-      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-        Sign in to your account
-      </h2>
-      <p class="mt-2 text-center text-sm text-gray-600">
-        Or
-        <a routerLink="/register" class="font-medium text-indigo-600 hover:text-indigo-500">
-          create a new account
-        </a>
-      </p>
+<div class="auth-wrap">
+  <div class="surface auth-card">
+    <div class="page-header" style="margin:0 0 12px">
+      <div>
+        <h2 class="page-title">Sign in</h2>
+        <p class="page-subtitle">Use your account to rate, save, and get recommendations.</p>
+      </div>
+      <a class="btn btn--ghost" routerLink="/register">Create account</a>
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+    <form class="stack" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       @if (successMessage()) {
-        <div class="rounded-md bg-green-50 p-4">
-          <p class="text-sm text-green-800">{{ successMessage() }}</p>
-        </div>
+        <div class="alert alert--ok">{{ successMessage() }}</div>
       }
 
       @if (errorMessage()) {
-        <div class="rounded-md bg-red-50 p-4">
-          <p class="text-sm text-red-800">{{ errorMessage() }}</p>
+        <div class="alert alert--error">{{ errorMessage() }}</div>
+      }
+
+      <div class="field">
+        <label class="label" for="email">Email</label>
+        <input
+          id="email"
+          class="input"
+          formControlName="email"
+          type="email"
+          placeholder="you@example.com"
+        />
+        @if (email?.invalid && email?.touched) {
+          <div class="help" style="color: var(--danger)">
+            @if (email?.errors?.['required']) { Email is required }
+            @if (email?.errors?.['email']) { Enter a valid email }
+          </div>
+        }
+      </div>
+
+      <div class="field">
+        <label class="label" for="password">Password</label>
+        <input
+          id="password"
+          class="input"
+          formControlName="password"
+          type="password"
+          placeholder="Your password"
+        />
+        @if (password?.invalid && password?.touched) {
+          <div class="help" style="color: var(--danger)">
+            @if (password?.errors?.['required']) { Password is required }
+            @if (password?.errors?.['minlength']) { Password must be at least 6 characters }
+          </div>
+        }
+      </div>
+
+      @if (otpRequired()) {
+        <div class="field">
+          <label class="label" for="otp">Authenticator code</label>
+          <input
+            id="otp"
+            class="input"
+            formControlName="otp"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            placeholder="123456"
+          />
+          @if (otp?.invalid && otp?.touched) {
+            <div class="help" style="color: var(--danger)">Enter a valid 6-digit code</div>
+          }
         </div>
       }
 
-      <div class="space-y-4">
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-          <input
-            id="email"
-            formControlName="email"
-            type="email"
-            class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            [class.border-red-500]="email?.invalid && email?.touched"
-            placeholder="Enter your email"
-          />
-          @if (email?.invalid && email?.touched) {
-            <p class="mt-1 text-sm text-red-600">
-              @if (email?.errors?.['required']) {
-                Email is required
-              }
-              @if (email?.errors?.['email']) {
-                Please enter a valid email
-              }
-            </p>
-          }
-        </div>
-
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-          <input
-            id="password"
-            formControlName="password"
-            type="password"
-            class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            [class.border-red-500]="password?.invalid && password?.touched"
-            placeholder="Enter your password"
-          />
-          @if (password?.invalid && password?.touched) {
-            <p class="mt-1 text-sm text-red-600">
-              @if (password?.errors?.['required']) {
-                Password is required
-              }
-              @if (password?.errors?.['minlength']) {
-                Password must be at least 6 characters
-              }
-            </p>
-          }
-        </div>
+      <div class="auth-actions">
+        <a class="btn btn--ghost" routerLink="/">Back</a>
+        <button class="btn btn--primary" type="submit" [disabled]="isLoading()">
+          @if (isLoading()) { Signing in… } @else { Sign in }
+        </button>
       </div>
 
-      <div>
-        <button
-          type="submit"
-          [disabled]="isLoading()"
-          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          @if (isLoading()) {
-            <span>Signing in...</span>
-          } @else {
-            <span>Sign in</span>
-          }
-        </button>
+      <div class="help">
+        No account? <a routerLink="/register" style="color: var(--brand-700); font-weight: 800; text-decoration: none;">Create one</a>
       </div>
     </form>
   </div>

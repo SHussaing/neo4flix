@@ -1,3 +1,19 @@
-<app-navbar></app-navbar>
-<router-outlet></router-outlet>
+<div class="app-shell">
+  <app-navbar></app-navbar>
 
+  <main class="app-main">
+    <div class="container">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container">
+      <div class="row">
+        <div class="mono">Neo4flix</div>
+        <div class="spacer"></div>
+        <div>Graph-powered recommendations • Secure APIs • Angular UI</div>
+      </div>
+    </div>
+  </footer>
+</div>

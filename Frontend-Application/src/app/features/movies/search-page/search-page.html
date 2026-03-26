@@ -1,0 +1,48 @@
+<section>
+  <header class="page-header">
+    <div>
+      <h2 class="page-title">Search</h2>
+      <p class="page-subtitle">Search by title, genre, or year. Try “Action 2020”.</p>
+    </div>
+    <div class="row">
+      <a class="btn btn--ghost" routerLink="/movies">Back to movies</a>
+    </div>
+  </header>
+
+  <div class="surface" style="padding:14px; margin-bottom: 14px;">
+    <form class="row" (submit)="$event.preventDefault(); search()">
+      <div class="field" style="flex:1; min-width: 220px;">
+        <label class="label">Query</label>
+        <input
+          class="input"
+          type="search"
+          [value]="q()"
+          (input)="q.set(($any($event.target)).value)"
+          placeholder="Title, genre, year…"
+        />
+      </div>
+      <div style="align-self:end">
+        <button class="btn btn--primary" type="submit">Search</button>
+      </div>
+    </form>
+  </div>
+
+  @if (loading()) {
+    <div class="alert">Loading…</div>
+  } @else if (error()) {
+    <div class="alert alert--error">{{ error() }}</div>
+  } @else {
+    <div class="grid">
+      @for (m of movies(); track m.id) {
+        <a class="movie-card col-4" [routerLink]="['/movies', m.id]">
+          <h3 class="movie-card__title">{{ m.title }}</h3>
+          <div class="chips">
+            <span class="chip">{{ m.genre }}</span>
+            <span class="chip">{{ m.releaseYear }}</span>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</section>
+

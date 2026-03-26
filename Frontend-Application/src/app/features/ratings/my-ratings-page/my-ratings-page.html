@@ -1,0 +1,43 @@
+<section>
+  <header class="page-header">
+    <div>
+      <h2 class="page-title">My ratings</h2>
+      <p class="page-subtitle">Everything you’ve rated so far.</p>
+    </div>
+    <div class="row">
+      <a class="btn btn--ghost" routerLink="/watchlist">Watchlist</a>
+      <a class="btn btn--ghost" routerLink="/movies">Browse</a>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="alert">Loading…</div>
+  } @else if (error()) {
+    <div class="alert alert--error">{{ error() }}</div>
+  } @else if (!hasRatings()) {
+    <div class="alert">You haven’t rated any movies yet.</div>
+  } @else {
+    <div class="surface" style="padding: 12px">
+      <div class="list">
+        @for (r of ratings()!; track r.movieId) {
+          <div class="row" style="padding:10px; border:1px solid var(--border); border-radius: 14px; background: rgba(255,255,255,.03)">
+            <div class="stack" style="gap:4px">
+              <a [routerLink]="['/movies', r.movieId]" style="text-decoration:none; font-weight:900">
+                {{ r.title ?? 'Movie' }}
+              </a>
+              <div class="chips">
+                @if (r.genre) { <span class="chip">{{ r.genre }}</span> }
+                @if (r.releaseYear) { <span class="chip">{{ r.releaseYear }}</span> }
+              </div>
+            </div>
+            <div class="spacer"></div>
+            <div class="chip">⭐ {{ r.stars }}</div>
+            @if (r.createdAt) {
+              <div class="help">{{ r.createdAt | date: 'medium' }}</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

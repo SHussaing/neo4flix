@@ -1,4 +1,4 @@
-package smahfood.ecommerce.gateway.smoke;
+package smahfood.neo4flix.gateway.smoke;
 
 import org.junit.jupiter.api.Test;
 

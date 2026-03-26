@@ -43,6 +43,10 @@ export class Auth {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
+  /**
+   * Optional helper for a future profile page.
+   * Safe to keep; it won't be called unless you wire it from UI.
+   */
   getMe(): Observable<User> {
     return this.http.get<User>(`${environment.apiUrl}/users/me`).pipe(
       tap(user => {
@@ -52,6 +56,9 @@ export class Auth {
     );
   }
 
+  /**
+   * Optional helper for a future profile page.
+   */
   updateProfile(data: Partial<User>): Observable<User> {
     return this.http.put<User>(`${environment.apiUrl}/users/me`, data).pipe(
       tap(user => {
@@ -61,23 +68,16 @@ export class Auth {
     );
   }
 
-  hasRole(role: string): boolean {
-    return this.currentUser()?.role === role;
-  }
-
   private getUserFromStorage(): User | null {
     const userJson = localStorage.getItem(this.USER_KEY);
     if (!userJson || userJson === 'undefined' || userJson === 'null') {
       return null;
     }
     try {
-      return JSON.parse(userJson);
-    } catch (e) {
-      console.error('Failed to parse user from storage:', e);
+      return JSON.parse(userJson) as User;
+    } catch {
       localStorage.removeItem(this.USER_KEY);
       return null;
     }
   }
 }
-
-

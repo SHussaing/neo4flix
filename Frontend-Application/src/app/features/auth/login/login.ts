@@ -15,6 +15,7 @@ export class Login implements OnInit {
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
   isLoading = signal(false);
+  otpRequired = signal(false);
 
   constructor(
     private fb: FormBuilder,
@@ -23,7 +24,8 @@ export class Login implements OnInit {
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      otp: ['']
     });
   }
 
@@ -47,18 +49,21 @@ export class Login implements OnInit {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
-        const user = this.authService.currentUser();
-        if (user?.role === 'SELLER') {
-          this.router.navigate(['/seller/dashboard']);
-        } else {
-          this.router.navigate(['/']);
-        }
+        this.router.navigate(['/']);
       },
       error: (error) => {
         this.isLoading.set(false);
 
         // Handle specific error codes from backend
         const errorCode = error.error?.error;
+
+        if (errorCode === 'OTP_REQUIRED') {
+          this.otpRequired.set(true);
+          this.loginForm.get('otp')?.setValidators([Validators.required, Validators.pattern(/^\d{6}$/)]);
+          this.loginForm.get('otp')?.updateValueAndValidity();
+          this.errorMessage.set('Two-factor authentication is enabled. Enter the 6-digit code from your authenticator app.');
+          return;
+        }
 
         if (errorCode === 'INVALID_CREDENTIALS') {
           this.errorMessage.set('Invalid email or password. Please try again.');
@@ -80,5 +85,9 @@ export class Login implements OnInit {
 
   get password() {
     return this.loginForm.get('password');
+  }
+
+  get otp() {
+    return this.loginForm.get('otp');
   }
 }

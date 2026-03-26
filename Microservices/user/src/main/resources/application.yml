@@ -1,22 +1,24 @@
 spring:
   application:
     name: USER-SERVICE
-
+  neo4j:
+    uri: ${SPRING_NEO4J_URI:bolt://localhost:7687}
+    authentication:
+      username: ${SPRING_NEO4J_AUTHENTICATION_USERNAME:neo4j}
+      password: ${SPRING_NEO4J_AUTHENTICATION_PASSWORD:password}
 
 # JWT Configuration
 jwt:
-  secret: mySecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLong12345678901234567890
-  expiration: 86400000
-
+  secret: ${JWT_SECRET:mySecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLong12345678901234567890}
+  expiration: ${JWT_EXPIRATION:86400000}
 
 server:
   port: 8081
   ssl:
     enabled: false
 
-
 # Eureka (Discovery)
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}

@@ -131,4 +131,4 @@ logging:
   level:
     org.springframework.cloud.gateway: DEBUG
     org.springframework.security: DEBUG
-    smahfood.ecommerce.gateway: DEBUG
+    smahfood.neo4flix.gateway: DEBUG
