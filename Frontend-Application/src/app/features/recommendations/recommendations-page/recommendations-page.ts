@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { RecommendationApi } from '../../../core/services/recommendation-api';
+import { Auth } from '../../../core/services/auth';
 
 @Component({
   standalone: true,
@@ -12,6 +13,7 @@ import { RecommendationApi } from '../../../core/services/recommendation-api';
 })
 export class RecommendationsPage {
   private readonly recommendationApi = inject(RecommendationApi);
+  private readonly auth = inject(Auth);
 
   readonly items = this.recommendationApi.recommendations;
   readonly loading = this.recommendationApi.loading;
@@ -44,12 +46,14 @@ export class RecommendationsPage {
     const items = this.items() ?? [];
     if (!items.length) return;
 
-    const lines = items.slice(0, 10).map((m, i) => `${i + 1}. ${m.title} (${m.releaseYear ?? ''}) - ${m.genre ?? ''}`);
-    const text = `Neo4flix recommendations:\n${lines.join('\n')}`;
+    const userName = this.auth.currentUser()?.name?.trim() || 'a Neo4flix user';
+
+    const lines = items.map((m, i) => `${i + 1}. ${m.title} (${m.releaseYear ?? ''}) - ${m.genre ?? ''}`);
+    const text = `Neo4flix recommendations for ${userName}:\n${lines.join('\n')}`;
 
     try {
       await navigator.clipboard.writeText(text);
-      this.shareMessage.set('Copied share text to clipboard');
+      this.shareMessage.set('Copied recommendations to clipboard');
       setTimeout(() => this.shareMessage.set(null), 2500);
     } catch {
       this.shareMessage.set('Failed to copy. Your browser may block clipboard access.');

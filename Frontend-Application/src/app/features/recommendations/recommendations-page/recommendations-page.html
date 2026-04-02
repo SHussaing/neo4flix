@@ -23,7 +23,7 @@
 
       <div class="col-12 row" style="margin-top:2px">
         <button class="btn btn--primary" type="submit">Apply filters</button>
-        <button class="btn btn--ghost" type="button" (click)="copyShareText()" [disabled]="!hasItems()">Copy share text</button>
+        <button class="btn btn--ghost" type="button" (click)="copyShareText()" [disabled]="!hasItems()">Share with friends</button>
         <div class="spacer"></div>
         @if (shareMessage()) {
           <span class="help">{{ shareMessage() }}</span>
