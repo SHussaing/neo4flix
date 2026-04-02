@@ -26,8 +26,20 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<AuthDtos.AuthResponse> login(@Valid @RequestBody AuthDtos.LoginRequest request) {
+    public ResponseEntity<AuthDtos.OtpChallengeResponse> login(@Valid @RequestBody AuthDtos.LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    public record VerifyLoginRequest(
+            @jakarta.validation.constraints.Email @jakarta.validation.constraints.NotBlank String email,
+            @jakarta.validation.constraints.NotBlank String challengeId,
+            @jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Pattern(regexp = "\\d{6}") String otp
+    ) {
+    }
+
+    @PostMapping("/auth/login/verify")
+    public ResponseEntity<AuthDtos.AuthResponse> verify(@Valid @RequestBody VerifyLoginRequest request) {
+        return ResponseEntity.ok(authService.verifyOtp(request.email(), request.otp(), request.challengeId()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

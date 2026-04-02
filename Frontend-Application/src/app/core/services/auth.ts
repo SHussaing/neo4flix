@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse, LoginRequest, RegisterRequest, User } from '../models/user.model';
+import { AuthResponse, LoginRequest, OtpChallengeResponse, RegisterRequest, User, VerifyLoginRequest } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -17,8 +17,12 @@ export class Auth {
 
   constructor(private http: HttpClient) {}
 
-  login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials).pipe(
+  login(credentials: LoginRequest): Observable<OtpChallengeResponse> {
+    return this.http.post<OtpChallengeResponse>(`${this.API_URL}/login`, credentials);
+  }
+
+  verifyLogin(body: VerifyLoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.API_URL}/login/verify`, body).pipe(
       tap(response => {
         localStorage.setItem(this.TOKEN_KEY, response.token);
         localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));

@@ -12,21 +12,21 @@ import org.springframework.transaction.annotation.Transactional;
 import smahfood.neo4flix.user.api.dto.AuthDtos;
 import smahfood.neo4flix.user.domain.UserNode;
 import smahfood.neo4flix.user.repo.UserRepository;
+import smahfood.neo4flix.user.security.EmailOtpService;
 import smahfood.neo4flix.user.security.JwtService;
-import smahfood.neo4flix.user.security.TotpService;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
-    private final TotpService totpService;
+    private final EmailOtpService emailOtpService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public AuthService(UserRepository userRepository, JwtService jwtService, TotpService totpService) {
+    public AuthService(UserRepository userRepository, JwtService jwtService, EmailOtpService emailOtpService) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
-        this.totpService = totpService;
+        this.emailOtpService = emailOtpService;
     }
 
     @Transactional
@@ -41,7 +41,7 @@ public class AuthService {
                 request.name(),
                 passwordEncoder.encode(request.password()),
                 List.of("USER"),
-                false,
+                true,
                 null,
                 Instant.now()
         );
@@ -50,7 +50,7 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public AuthDtos.AuthResponse login(AuthDtos.LoginRequest request) {
+    public AuthDtos.OtpChallengeResponse login(AuthDtos.LoginRequest request) {
         UserNode user = userRepository.findByEmail(request.email().toLowerCase())
                 .orElseThrow(() -> new IllegalArgumentException("INVALID_CREDENTIALS"));
 
@@ -58,14 +58,21 @@ public class AuthService {
             throw new IllegalArgumentException("INVALID_CREDENTIALS");
         }
 
-        if (user.isTwoFaEnabled()) {
-            if (request.otp() == null || !totpService.verifyCode(user.getTwoFaSecret(), request.otp())) {
-                throw new IllegalArgumentException("OTP_REQUIRED");
-            }
+        EmailOtpService.CreatedChallenge c = emailOtpService.createChallengeWithOtp(user.getEmail());
+        return new AuthDtos.OtpChallengeResponse(c.challengeId(), user.getEmail(), c.otp());
+    }
+
+    // Removed legacy TOTP-style verify method; verification is done via email+challengeId+otp.
+
+    public AuthDtos.AuthResponse verifyOtp(String email, String otp, String challengeId) {
+        UserNode user = userRepository.findByEmail(email.toLowerCase())
+                .orElseThrow(() -> new IllegalArgumentException("INVALID_CREDENTIALS"));
+
+        if (!emailOtpService.verify(challengeId, email, otp)) {
+            throw new IllegalArgumentException("INVALID_OTP");
         }
 
         String token = jwtService.generateToken(user.getId(), user.getEmail(), user.getRoles());
-
         return new AuthDtos.AuthResponse(
                 token,
                 new AuthDtos.UserResponse(user.getId(), user.getEmail(), user.getName()),

@@ -18,8 +18,14 @@ public final class AuthDtos {
 
     public record LoginRequest(
             @Email @NotBlank String email,
-            @NotBlank String password,
-            String otp
+            @NotBlank String password
+    ) {
+    }
+
+    public record OtpChallengeResponse(
+            String challengeId,
+            String email,
+            String devOtp
     ) {
     }
 

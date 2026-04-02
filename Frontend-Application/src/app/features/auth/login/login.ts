@@ -15,7 +15,9 @@ export class Login implements OnInit {
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
   isLoading = signal(false);
-  otpRequired = signal(false);
+
+  otpStep = signal(false);
+  challengeId = signal<string | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -47,33 +49,65 @@ export class Login implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.authService.login(this.loginForm.value).subscribe({
+    const email = (this.loginForm.get('email')?.value ?? '').toString();
+
+    if (!this.otpStep()) {
+      const password = (this.loginForm.get('password')?.value ?? '').toString();
+      this.authService.login({ email, password }).subscribe({
+        next: (resp) => {
+          this.isLoading.set(false);
+          this.challengeId.set(resp.challengeId);
+          this.otpStep.set(true);
+
+          // OTP required now
+          this.loginForm.get('otp')?.setValidators([Validators.required, Validators.pattern(/^\d{6}$/)]);
+          this.loginForm.get('otp')?.updateValueAndValidity();
+
+          // If devOtp is provided (dev mode), prefill it to make the demo work.
+          if (resp.devOtp) {
+            this.loginForm.get('otp')?.setValue(resp.devOtp);
+          }
+
+          // We don't need password anymore for step 2
+          this.loginForm.get('password')?.clearValidators();
+          this.loginForm.get('password')?.updateValueAndValidity();
+
+          this.errorMessage.set('We sent a 6-digit code to your email (check spam). Enter it to finish signing in.');
+        },
+        error: (error) => {
+          this.isLoading.set(false);
+          const errorCode = error.error?.error;
+          if (errorCode === 'INVALID_CREDENTIALS') {
+            this.errorMessage.set('Invalid email or password.');
+          } else {
+            this.errorMessage.set('Login failed. Please try again.');
+          }
+        }
+      });
+      return;
+    }
+
+    // Step 2: verify OTP
+    const otp = (this.loginForm.get('otp')?.value ?? '').toString();
+    const challengeId = this.challengeId();
+    if (!challengeId) {
+      this.isLoading.set(false);
+      this.errorMessage.set('Missing OTP challenge. Please try signing in again.');
+      this.otpStep.set(false);
+      return;
+    }
+
+    this.authService.verifyLogin({ email, challengeId, otp }).subscribe({
       next: () => {
         this.router.navigate(['/']);
       },
       error: (error) => {
         this.isLoading.set(false);
-
-        // Handle specific error codes from backend
         const errorCode = error.error?.error;
-
-        if (errorCode === 'OTP_REQUIRED') {
-          this.otpRequired.set(true);
-          this.loginForm.get('otp')?.setValidators([Validators.required, Validators.pattern(/^\d{6}$/)]);
-          this.loginForm.get('otp')?.updateValueAndValidity();
-          this.errorMessage.set('Two-factor authentication is enabled. Enter the 6-digit code from your authenticator app.');
-          return;
-        }
-
-        if (errorCode === 'INVALID_CREDENTIALS') {
-          this.errorMessage.set('Invalid email or password. Please try again.');
-        } else if (errorCode === 'UNAUTHORIZED') {
-          this.errorMessage.set('You are not authorized to login.');
-        } else if (error.error?.errors && error.error.errors.length > 0) {
-          // Handle validation errors
-          this.errorMessage.set('Please check your input: ' + error.error.errors.join(', '));
+        if (errorCode === 'INVALID_OTP') {
+          this.errorMessage.set('Invalid code. Try again.');
         } else {
-          this.errorMessage.set('Login failed. Please try again.');
+          this.errorMessage.set('Verification failed. Please try again.');
         }
       }
     });

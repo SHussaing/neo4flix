@@ -41,8 +41,9 @@
           formControlName="password"
           type="password"
           placeholder="Your password"
+          [disabled]="otpStep()"
         />
-        @if (password?.invalid && password?.touched) {
+        @if (password?.invalid && password?.touched && !otpStep()) {
           <div class="help" style="color: var(--danger)">
             @if (password?.errors?.['required']) { Password is required }
             @if (password?.errors?.['minlength']) { Password must be at least 6 characters }
@@ -50,9 +51,9 @@
         }
       </div>
 
-      @if (otpRequired()) {
+      @if (otpStep()) {
         <div class="field">
-          <label class="label" for="otp">Authenticator code</label>
+          <label class="label" for="otp">Email code</label>
           <input
             id="otp"
             class="input"

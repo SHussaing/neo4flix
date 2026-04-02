@@ -38,10 +38,9 @@ export class Register {
 
     this.authService.register(this.registerForm.value).subscribe({
       next: () => {
-        // Registration successful - redirect to login
         this.router.navigate(['/login'], {
           state: {
-            message: 'Registration successful! Please login with your credentials.'
+            message: 'Account created. Sign in to receive a 6-digit code by email.'
           }
         });
       },
