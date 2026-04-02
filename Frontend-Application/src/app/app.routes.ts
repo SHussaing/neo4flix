@@ -4,7 +4,6 @@ import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
 
 import { HomePage } from './features/movies/home-page/home-page';
-import { SearchPage } from './features/movies/search-page/search-page';
 import { MovieDetailsPage } from './features/movies/movie-details-page/movie-details-page';
 import { RecommendationsPage } from './features/recommendations/recommendations-page/recommendations-page';
 import { WatchlistPage } from './features/watchlist/watchlist-page/watchlist-page';
@@ -19,7 +18,6 @@ export const routes: Routes = [
 
   // Movies
   { path: 'movies', component: HomePage },
-  { path: 'search', component: SearchPage },
   { path: 'movies/:id', component: MovieDetailsPage },
 
   // Personalized

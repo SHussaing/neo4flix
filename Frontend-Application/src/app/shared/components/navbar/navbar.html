@@ -4,7 +4,6 @@
 
     <div class="nav__links">
       <a routerLink="/movies" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">Movies</a>
-      <a routerLink="/search" routerLinkActive="is-active">Search</a>
 
       @if (authService.isAuthenticated()) {
         <a routerLink="/recommendations" routerLinkActive="is-active">Recommendations</a>

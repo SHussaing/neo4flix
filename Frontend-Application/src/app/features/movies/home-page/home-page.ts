@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MovieApi } from '../../../core/services/movie-api';
 
@@ -12,6 +12,8 @@ import { MovieApi } from '../../../core/services/movie-api';
 export class HomePage {
   private readonly movieApi = inject(MovieApi);
 
+  readonly q = signal('');
+
   readonly movies = this.movieApi.movies;
   readonly loading = this.movieApi.loading;
   readonly error = this.movieApi.error;
@@ -20,5 +22,15 @@ export class HomePage {
 
   constructor() {
     this.movieApi.loadAll();
+  }
+
+  search() {
+    const query = this.q().trim();
+    if (!query) {
+      this.movieApi.loadAll();
+      return;
+    }
+
+    this.movieApi.search(query);
   }
 }

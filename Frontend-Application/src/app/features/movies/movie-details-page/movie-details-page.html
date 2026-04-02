@@ -4,10 +4,6 @@
       <h2 class="page-title">Movie</h2>
       <p class="page-subtitle">Details, rating, and watchlist.</p>
     </div>
-    <div class="row">
-      <a class="btn btn--ghost" routerLink="/movies">Back</a>
-      <a class="btn btn--ghost" routerLink="/recommendations">Recommendations</a>
-    </div>
   </header>
 
   @if (loading()) {
@@ -71,11 +67,6 @@
                   Save rating
                 </button>
                 <button class="btn btn--ghost" type="button" (click)="addToWatchlist()">Add to watchlist</button>
-              </div>
-
-              <div class="row">
-                <a class="btn btn--ghost" routerLink="/watchlist">Open watchlist</a>
-                <a class="btn btn--ghost" routerLink="/ratings">My ratings</a>
               </div>
 
               @if (savedMessage()) {
