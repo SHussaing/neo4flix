@@ -1,5 +1,2 @@
 docker compose down -v --rmi all
 docker compose up -d --build
-
-jaffer@gmail.com
-12345678
